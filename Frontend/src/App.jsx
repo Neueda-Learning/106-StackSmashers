@@ -17,6 +17,14 @@ function ProtectedRoute({ children }) {
 
 function AppRoutes() {
   const { isAuthenticated } = useAuth();
+  return (
+    <Routes>
+      <Route
+        path="/login"
+        element={isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />}
+      />
+    </Routes>
+  );
 }
 
 export default function App() {
