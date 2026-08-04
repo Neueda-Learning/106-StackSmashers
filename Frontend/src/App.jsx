@@ -33,6 +33,11 @@ function AppRoutes() {
       >
         <Route index element={<DashboardPage />} />
         <Route path="transactions" element={<TransactionsPage />} />
+        <Route path="alerts" element={<AlertsPage />} />
+        <Route path="alerts/:id" element={<AlertDetailPage />} />
+        <Route path="investigation" element={<InvestigationPage />} />
+        <Route path="rules" element={<RulesPage />} />
+        <Route path="reports" element={<ReportsPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
