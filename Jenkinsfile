@@ -21,6 +21,8 @@ pipeline {
         stage('Checkout Source') {
             steps {
                 script {
+                    env.WORK_DIR = "repo-${env.BUILD_NUMBER}"
+
                     def repoUrl = env.REPO_URL?.trim()
                     def branch = env.REPO_BRANCH?.trim()
                     def credentialsId = env.REPO_CREDENTIALS_ID?.trim()
@@ -34,8 +36,6 @@ pipeline {
                     }
 
                     dir(env.WORK_DIR) {
-                        deleteDir()
-
                         if (credentialsId) {
                             git branch: branch, credentialsId: credentialsId, url: repoUrl
                         } else {
@@ -154,7 +154,7 @@ JWT_SECRET=${env.JWT_SECRET ?: 'd83f5e2a7c1b94d6e8f0a2b4c6d8e0f2a4b6c8d0e2f4a6b8
         }
         cleanup {
             script {
-                sh 'rm -f .compose_cmd repo/.env'
+                sh 'rm -f .compose_cmd "${WORK_DIR}/.env"'
             }
         }
     }
