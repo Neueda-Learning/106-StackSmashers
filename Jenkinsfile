@@ -11,6 +11,7 @@ pipeline {
         COMPOSE_PROJECT_NAME = 'tms'
         COMPOSE_CMD_FILE = '.compose_cmd'
         ENV_FILE = '.env'
+        WORK_DIR = 'repo'
         REPO_URL = 'https://github.com/Neueda-Learning/106-StackSmashers.git'
         REPO_BRANCH = 'main'
         REPO_CREDENTIALS_ID = ''
@@ -20,8 +21,6 @@ pipeline {
         stage('Checkout Source') {
             steps {
                 script {
-                    deleteDir()
-
                     def repoUrl = env.REPO_URL?.trim()
                     def branch = env.REPO_BRANCH?.trim()
                     def credentialsId = env.REPO_CREDENTIALS_ID?.trim()
@@ -34,10 +33,14 @@ pipeline {
                         error('REPO_BRANCH is required.')
                     }
 
-                    if (credentialsId) {
-                        git branch: branch, credentialsId: credentialsId, url: repoUrl
-                    } else {
-                        git branch: branch, url: repoUrl
+                    dir(env.WORK_DIR) {
+                        deleteDir()
+
+                        if (credentialsId) {
+                            git branch: branch, credentialsId: credentialsId, url: repoUrl
+                        } else {
+                            git branch: branch, url: repoUrl
+                        }
                     }
                 }
             }
@@ -77,7 +80,7 @@ fi
 
         stage('Build Backend') {
             steps {
-                dir('backend') {
+                dir("${env.WORK_DIR}/backend") {
                     sh 'chmod +x mvnw && ./mvnw -B clean package -DskipTests'
                 }
             }
@@ -85,7 +88,7 @@ fi
 
         stage('Validate Frontend') {
             steps {
-                dir('frontend') {
+                dir("${env.WORK_DIR}/frontend") {
                     sh '''
 if command -v npm >/dev/null 2>&1; then
     npm ci
@@ -109,7 +112,7 @@ MYSQL_PASSWORD=${env.MYSQL_PASSWORD ?: 'tms_password'}
 JWT_SECRET=${env.JWT_SECRET ?: 'd83f5e2a7c1b94d6e8f0a2b4c6d8e0f2a4b6c8d0e2f4a6b8c0d2e4f6a8b0c2d4'}
 """.trim() + "\n"
 
-                    writeFile file: env.ENV_FILE, text: envContent
+                    writeFile file: "${env.WORK_DIR}/${env.ENV_FILE}", text: envContent
                 }
             }
         }
@@ -118,9 +121,13 @@ JWT_SECRET=${env.JWT_SECRET ?: 'd83f5e2a7c1b94d6e8f0a2b4c6d8e0f2a4b6c8d0e2f4a6b8
             steps {
                 script {
                     def composeCmd = readFile(env.COMPOSE_CMD_FILE).trim()
-                    sh "${composeCmd} --env-file .env pull || true"
-                    sh "${composeCmd} --env-file .env up -d --build --remove-orphans"
-                    sh "${composeCmd} --env-file .env ps"
+                    dir(env.WORK_DIR) {
+                        // Ensure backend does not collide with Jenkins on host port 8080.
+                        sh "sed -i 's/\"8080:8080\"/\"8081:8080\"/g' docker-compose.yml"
+                        sh "${composeCmd} --env-file .env pull || true"
+                        sh "${composeCmd} --env-file .env up -d --build --remove-orphans"
+                        sh "${composeCmd} --env-file .env ps"
+                    }
                 }
             }
         }
@@ -129,7 +136,9 @@ JWT_SECRET=${env.JWT_SECRET ?: 'd83f5e2a7c1b94d6e8f0a2b4c6d8e0f2a4b6c8d0e2f4a6b8
             steps {
                 script {
                     def composeCmd = readFile(env.COMPOSE_CMD_FILE).trim()
-                    sh "${composeCmd} --env-file .env ps"
+                    dir(env.WORK_DIR) {
+                        sh "${composeCmd} --env-file .env ps"
+                    }
                     sh 'curl -fsS http://localhost:8081/api/actuator/health'
                 }
             }
@@ -145,7 +154,7 @@ JWT_SECRET=${env.JWT_SECRET ?: 'd83f5e2a7c1b94d6e8f0a2b4c6d8e0f2a4b6c8d0e2f4a6b8
         }
         cleanup {
             script {
-                sh 'rm -f .env .compose_cmd'
+                sh 'rm -f .compose_cmd repo/.env'
             }
         }
     }
