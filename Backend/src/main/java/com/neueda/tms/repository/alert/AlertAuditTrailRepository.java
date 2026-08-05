@@ -36,7 +36,8 @@ public class AlertAuditTrailRepository {
     // ── RowMapper ──────────────────────────────────────────────────────────────
 
     /**
-     * Joins alert_audit_trail → alerts → transactions to load all required fields in one query.
+     * Joins alert_audit_trail → alerts → transactions to load all required fields
+     * in one query.
      */
     private static final RowMapper<AlertAuditTrail> ROW_MAPPER = (rs, rowNum) -> {
         AlertAuditTrail entry = new AlertAuditTrail();
@@ -79,7 +80,8 @@ public class AlertAuditTrailRepository {
         }, keyHolder);
 
         Number key = keyHolder.getKey();
-        if (key != null) entry.setId(key.longValue());
+        if (key != null)
+            entry.setId(key.longValue());
         return entry;
     }
 
@@ -137,7 +139,7 @@ public class AlertAuditTrailRepository {
     }
 
     public long countAuditReport(LocalDateTime fromDate, LocalDateTime toDate,
-                                  AlertAuditTrail.AuditAction action) {
+            AlertAuditTrail.AuditAction action) {
         StringBuilder sql = new StringBuilder(
                 "SELECT COUNT(*) FROM alert_audit_trail aat WHERE 1=1");
         List<Object> params = new ArrayList<>();
