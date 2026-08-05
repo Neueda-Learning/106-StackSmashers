@@ -21,7 +21,7 @@ pipeline {
         stage('Checkout Source') {
             steps {
                 script {
-                    def workDir = "repo-${env.BUILD_NUMBER}-${UUID.randomUUID().toString().take(8)}"
+                    def workDir = "repo-${env.BUILD_NUMBER}-${UUID.randomUUID().toString().substring(0, 8)}"
 
                     def repoUrl = env.REPO_URL?.trim()
                     def branch = env.REPO_BRANCH?.trim()
@@ -136,7 +136,7 @@ JWT_SECRET=${env.JWT_SECRET ?: 'd83f5e2a7c1b94d6e8f0a2b4c6d8e0f2a4b6c8d0e2f4a6b8
             }
         }
 
-        stage('Deploy With Docker Compose') {
+        stage('Deploy MySQL') {
             steps {
                 script {
                     def workDir = readFile(env.WORK_DIR_FILE).trim()
@@ -144,21 +144,14 @@ JWT_SECRET=${env.JWT_SECRET ?: 'd83f5e2a7c1b94d6e8f0a2b4c6d8e0f2a4b6c8d0e2f4a6b8
                     dir(workDir) {
                         // Ensure backend does not collide with Jenkins on host port 8080.
                         sh "sed -i 's/\"8080:8080\"/\"8081:8080\"/g' docker-compose.yml"
-                        sh "${composeCmd} --env-file .env pull || true"
-                        sh "${composeCmd} --env-file .env up -d --build --remove-orphans"
-                        sh "${composeCmd} --env-file .env ps"
-                    }
-                }
-            }
-        }
 
-        stage('Initialize Database Schema') {
-            steps {
-                script {
-                    def workDir = readFile(env.WORK_DIR_FILE).trim()
-                    def composeCmd = readFile(env.COMPOSE_CMD_FILE).trim()
-                    dir(workDir) {
-                        // Wait for MySQL's own healthcheck before applying schema.
+                        // Start MySQL ONLY first and wait for it to be healthy. The backend's
+                        // DataInitializer runs schema-dependent queries the moment it boots, so
+                        // tables must exist BEFORE the backend container is started — starting
+                        // the whole stack at once caused the backend to crash-loop and fail its
+                        // own healthcheck before schema.sql could be applied.
+                        sh "${composeCmd} --env-file .env pull mysql || true"
+                        sh "${composeCmd} --env-file .env up -d mysql"
                         sh '''
                             for i in $(seq 1 30); do
                                 status=$(docker inspect -f "{{.State.Health.Status}}" tms-mysql 2>/dev/null || echo "starting")
@@ -170,12 +163,40 @@ JWT_SECRET=${env.JWT_SECRET ?: 'd83f5e2a7c1b94d6e8f0a2b4c6d8e0f2a4b6c8d0e2f4a6b8
                                 sleep 5
                             done
                         '''
+                    }
+                }
+            }
+        }
+
+        stage('Initialize Database Schema') {
+            steps {
+                script {
+                    def workDir = readFile(env.WORK_DIR_FILE).trim()
+                    def composeCmd = readFile(env.COMPOSE_CMD_FILE).trim()
+                    dir(workDir) {
                         // schema.sql (mysql/init/schema.sql) is bind-mounted into the mysql
                         // container at /docker-entrypoint-initdb.d/schema.sql. Applying it here
                         // (not just relying on first-boot auto-init) keeps the schema up to date
                         // even if the mysql_data volume already existed from a previous deploy.
                         // CREATE TABLE IF NOT EXISTS makes this safe to re-run every build.
+                        // This MUST happen before the backend container starts.
                         sh "${composeCmd} --env-file .env exec -T mysql sh -c 'mysql -u root -p\"\$MYSQL_ROOT_PASSWORD\" \"\$MYSQL_DATABASE\" < /docker-entrypoint-initdb.d/schema.sql'"
+                    }
+                }
+            }
+        }
+
+        stage('Deploy Application') {
+            steps {
+                script {
+                    def workDir = readFile(env.WORK_DIR_FILE).trim()
+                    def composeCmd = readFile(env.COMPOSE_CMD_FILE).trim()
+                    dir(workDir) {
+                        // MySQL is already up/healthy and schema is applied; now bring up
+                        // (and build) backend + frontend on top of it.
+                        sh "${composeCmd} --env-file .env pull || true"
+                        sh "${composeCmd} --env-file .env up -d --build --remove-orphans"
+                        sh "${composeCmd} --env-file .env ps"
                     }
                 }
             }
