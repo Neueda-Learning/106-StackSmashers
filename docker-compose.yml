@@ -48,7 +48,7 @@ services:
       DB_USER: ${MYSQL_USER:-tms_user}
       DB_PASSWORD: ${MYSQL_PASSWORD:-tms_password}
       JWT_SECRET: ${JWT_SECRET:-d83f5e2a7c1b94d6e8f0a2b4c6d8e0f2a4b6c8d0e2f4a6b8c0d2e4f6a8b0c2d4}
-      FRONTEND_URL: http://localhost:8082
+      FRONTEND_URL: http://localhost:8090
       SPRING_PROFILES_ACTIVE: docker
     ports:
       - "8081:8080"
@@ -76,7 +76,7 @@ services:
     container_name: tms-frontend
     restart: unless-stopped
     ports:
-      - "8082:3000"
+      - "8090:3000"
     depends_on:
       backend:
         condition: service_healthy
