@@ -133,6 +133,7 @@ html[data-theme='light'] {
   /* Light mode overrides for commonly used utility classes in the current UI. */
   html[data-theme='light'] .bg-surface-900 { background-color: #f8fafc !important; }
   html[data-theme='light'] .bg-surface-800 { background-color: #f1f5f9 !important; }
+  html[data-theme='light'] .bg-surface-800\/50 { background-color: rgba(241, 245, 249, 0.92) !important; }
   html[data-theme='light'] .bg-surface-700 { background-color: #e2e8f0 !important; }
   html[data-theme='light'] .bg-surface-600 { background-color: #cbd5e1 !important; }
   html[data-theme='light'] .bg-surface-500 { background-color: #94a3b8 !important; }
@@ -148,6 +149,20 @@ html[data-theme='light'] {
   html[data-theme='light'] .border-white\/5 { border-color: rgba(15, 23, 42, 0.08) !important; }
   html[data-theme='light'] .border-white\/10 { border-color: rgba(15, 23, 42, 0.12) !important; }
   html[data-theme='light'] .hover\:bg-white\/5:hover { background-color: rgba(15, 23, 42, 0.05) !important; }
+
+  /* Keep button text readable in light mode, especially on colored backgrounds. */
+  html[data-theme='light'] .btn-primary {
+    color: #ffffff !important;
+  }
+  html[data-theme='light'] .btn-secondary {
+    color: #0f172a !important;
+    border-color: rgba(15, 23, 42, 0.14) !important;
+  }
+  html[data-theme='light'] .btn-danger,
+  html[data-theme='light'] .btn-warning,
+  html[data-theme='light'] .btn-success {
+    color: #0f172a !important;
+  }
 
   .glow-blue { box-shadow: 0 0 20px theme('colors.brand.500' / 20%); }
   .text-gradient {
