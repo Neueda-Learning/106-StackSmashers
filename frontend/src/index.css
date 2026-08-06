@@ -134,6 +134,7 @@ html[data-theme='light'] {
   html[data-theme='light'] .bg-surface-900 { background-color: #f8fafc !important; }
   html[data-theme='light'] .bg-surface-800 { background-color: #f1f5f9 !important; }
   html[data-theme='light'] .bg-surface-800\/50 { background-color: rgba(241, 245, 249, 0.92) !important; }
+  html[data-theme='light'] .bg-surface-800\/90 { background-color: rgba(241, 245, 249, 0.96) !important; }
   html[data-theme='light'] .bg-surface-700 { background-color: #e2e8f0 !important; }
   html[data-theme='light'] .bg-surface-600 { background-color: #cbd5e1 !important; }
   html[data-theme='light'] .bg-surface-500 { background-color: #94a3b8 !important; }
