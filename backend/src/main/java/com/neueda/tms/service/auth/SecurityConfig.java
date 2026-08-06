@@ -137,7 +137,8 @@ public class SecurityConfig {
                 frontendUrl,
                 "https://neueda-project-ten.vercel.app",
                 "http://localhost:*",
-                "http://10.9.65.216:*"
+                "http://10.9.65.216:*",
+                "http://10.9.71.90:*"
         ));
 
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
