@@ -13,7 +13,7 @@ pipeline {
         WORK_DIR_FILE = '.workdir'
         ENV_FILE = '.env'
         REPO_URL = 'https://github.com/Neueda-Learning/106-StackSmashers.git'
-        REPO_BRANCH = 'main'
+        REPO_BRANCH = 'frontend'
         REPO_CREDENTIALS_ID = ''
     }
 
