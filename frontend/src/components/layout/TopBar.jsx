@@ -27,11 +27,12 @@ export default function TopBar({ title }) {
         <button
           type="button"
           onClick={toggleTheme}
-          className="btn-secondary !px-2.5 !py-1.5"
+          className="btn-secondary !px-3 !py-1.5"
           aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
           title={`Switch to ${isDark ? 'light' : 'dark'} mode`}
         >
           {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          <span className="text-xs">{isDark ? 'Light' : 'Dark'}</span>
         </button>
         <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-700 border border-white/5">
           <Bell className="w-3.5 h-3.5 text-slate-400" />

@@ -1,16 +1,14 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { useTheme } from '../context/ThemeContext'
 import toast from 'react-hot-toast'
-import { Shield, Eye, EyeOff, Lock, User, Moon, Sun } from 'lucide-react'
+import { Shield, Eye, EyeOff, Lock, User } from 'lucide-react'
 
 export default function LoginPage() {
   const [form, setForm] = useState({ username: '', password: '' })
   const [showPass, setShowPass] = useState(false)
   const [loading, setLoading] = useState(false)
   const { login } = useAuth()
-  const { isDark, toggleTheme } = useTheme()
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
@@ -29,15 +27,6 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-surface-900 flex items-center justify-center p-4 relative overflow-hidden">
-      <button
-        type="button"
-        onClick={toggleTheme}
-        className="btn-secondary absolute top-4 right-4 z-10 !px-2.5 !py-1.5"
-        aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
-        title={`Switch to ${isDark ? 'light' : 'dark'} mode`}
-      >
-        {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-      </button>
       {/* Background glow */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2
