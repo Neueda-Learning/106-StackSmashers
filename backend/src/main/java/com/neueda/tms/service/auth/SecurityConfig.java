@@ -92,6 +92,8 @@ public class SecurityConfig {
                         .contentSecurityPolicy(csp ->
                                 csp.policyDirectives(
                                         "default-src 'self'; " +
+                                        "script-src 'self' 'unsafe-inline'; " +
+                                        "style-src 'self' 'unsafe-inline'; " +
                                         "frame-ancestors 'none'; " +
                                         "form-action 'self'"
                                 ))
@@ -104,6 +106,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Public: login
                         .requestMatchers("/auth/login").permitAll()
+                        // Public: OpenAPI docs and Swagger UI
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         // Public: health check for ops/load balancers
                         .requestMatchers("/actuator/health").permitAll()
                         // Open for upstream bank system integration
