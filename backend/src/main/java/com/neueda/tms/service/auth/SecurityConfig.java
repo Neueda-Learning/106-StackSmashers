@@ -108,6 +108,13 @@ public class SecurityConfig {
                         .requestMatchers("/actuator/health").permitAll()
                         // Open for upstream bank system integration
                         .requestMatchers(HttpMethod.POST, "/transactions").permitAll()
+                        // Public: Swagger UI / OpenAPI docs
+                        .requestMatchers(
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/v3/api-docs.yaml"
+                        ).permitAll()
                         // Everything else requires a valid JWT
                         .anyRequest().authenticated())
 
@@ -130,7 +137,8 @@ public class SecurityConfig {
                 frontendUrl,
                 "https://neueda-project-ten.vercel.app",
                 "http://localhost:*",
-                "http://10.9.65.216:*"
+                "http://10.9.65.216:*",
+                "http://10.9.71.90:*"
         ));
 
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
