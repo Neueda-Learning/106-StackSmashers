@@ -108,6 +108,13 @@ public class SecurityConfig {
                         .requestMatchers("/actuator/health").permitAll()
                         // Open for upstream bank system integration
                         .requestMatchers(HttpMethod.POST, "/transactions").permitAll()
+                        // Public: Swagger UI / OpenAPI docs
+                        .requestMatchers(
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/v3/api-docs.yaml"
+                        ).permitAll()
                         // Everything else requires a valid JWT
                         .anyRequest().authenticated())
 
@@ -123,11 +130,15 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         // Explicit whitelist — no wildcard origins for a banking API
-        config.setAllowedOrigins(List.of(
+        // Origin PATTERNS (not exact origins) so any port on the known EC2
+        // deployment host is accepted — avoids having to edit/redeploy this
+        // config every time the frontend's published port changes.
+        config.setAllowedOriginPatterns(List.of(
                 frontendUrl,
                 "https://neueda-project-ten.vercel.app",
-                "http://localhost:3000",
-                "http://localhost:5173"
+                "http://localhost:*",
+                "http://10.9.65.216:*",
+                "http://10.9.71.90:*"
         ));
 
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
