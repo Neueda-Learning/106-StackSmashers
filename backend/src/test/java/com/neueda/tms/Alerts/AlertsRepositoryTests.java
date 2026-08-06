@@ -190,3 +190,4 @@ class AlertsRepositoryTests {
         assertThat(page).isEmpty();
     }
 }
+

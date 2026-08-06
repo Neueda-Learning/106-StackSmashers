@@ -122,3 +122,4 @@ class RuleControllerTests {
                 MonitoringRule.RuleSeverity.HIGH, active, Map.of("threshold", 10000), LocalDateTime.now());
     }
 }
+

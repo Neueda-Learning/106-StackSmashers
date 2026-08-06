@@ -238,3 +238,4 @@ class AlertControllerTests {
         return new PageResponse<>(items, 0, 20, items.size(), 1, true, true);
     }
 }
+

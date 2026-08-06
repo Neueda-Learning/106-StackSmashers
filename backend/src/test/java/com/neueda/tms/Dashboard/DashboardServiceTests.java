@@ -110,3 +110,4 @@ class DashboardServiceTests {
         assertThat(stats.getAlertsByStatus()).containsExactlyElementsOf(chartData);
     }
 }
+

@@ -163,3 +163,4 @@ class RuleRepositoryTests {
         return rule;
     }
 }
+
