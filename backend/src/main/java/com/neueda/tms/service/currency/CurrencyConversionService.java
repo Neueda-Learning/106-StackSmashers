@@ -50,7 +50,7 @@ public class CurrencyConversionService {
             Map<String, Object> raw = mapper.readValue(is, Map.class);
             for (Map.Entry<String, Object> entry : raw.entrySet()) {
                 String currencyCode = entry.getKey();
-                // Skip metadata keys (e.g. "_comment") that aren't real currency rates
+                // Skip metadata keys (e.g. "_comment") that aren't real currency rates/
                 if (currencyCode.startsWith("_")) {
                     continue;
                 }
@@ -86,7 +86,8 @@ public class CurrencyConversionService {
 
         BigDecimal rate = ratesToUsd.get(currencyCode.toUpperCase());
         if (rate == null) {
-            log.warn("No exchange rate configured for currency '{}'; treating as 1:1 with USD for rule evaluation.", currencyCode);
+            log.warn("No exchange rate configured for currency '{}'; treating as 1:1 with USD for rule evaluation.",
+                    currencyCode);
             return amount.setScale(2, RoundingMode.HALF_UP);
         }
 
