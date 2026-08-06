@@ -70,3 +70,4 @@ class DashboardControllerTests {
         assertThat(response.getBody().getAlertsByRule()).isNull();
     }
 }
+

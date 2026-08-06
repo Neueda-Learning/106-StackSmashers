@@ -137,3 +137,4 @@ class TmsApplicationTests {
         assertThat(result.getTotalAlerts()).isEqualTo(200L);
     }
 }
+

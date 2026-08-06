@@ -157,3 +157,4 @@ class RuleServiceTests {
         return rule;
     }
 }
+

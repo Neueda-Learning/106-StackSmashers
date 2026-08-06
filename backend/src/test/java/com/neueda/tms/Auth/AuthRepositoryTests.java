@@ -127,3 +127,4 @@ class AuthRepositoryTests {
         return user;
     }
 }
+
