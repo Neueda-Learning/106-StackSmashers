@@ -90,12 +90,33 @@ fi
             }
         }
 
+        stage('Test Backend') {
+            steps {
+                script {
+                    def workDir = readFile(env.WORK_DIR_FILE).trim()
+                    dir("${workDir}/backend") {
+                        sh 'chmod +x mvnw && ./mvnw -B clean test'
+                    }
+                }
+            }
+            post {
+                always {
+                    script {
+                        def workDir = readFile(env.WORK_DIR_FILE).trim()
+                        junit testResults: "${workDir}/backend/target/surefire-reports/*.xml", allowEmptyResults: true
+                    }
+                }
+            }
+        }
+
         stage('Build Backend') {
             steps {
                 script {
                     def workDir = readFile(env.WORK_DIR_FILE).trim()
                     dir("${workDir}/backend") {
-                        sh 'chmod +x mvnw && ./mvnw -B clean package -DskipTests'
+                        // Tests already ran and passed in the "Test Backend" stage above,
+                        // so skip re-running them here to avoid doing the work twice.
+                        sh 'chmod +x mvnw && ./mvnw -B package -DskipTests'
                     }
                 }
             }
