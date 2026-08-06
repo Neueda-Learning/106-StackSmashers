@@ -28,7 +28,7 @@ function StatCard({ label, value, icon: Icon, color = 'blue', sublabel, to }) {
   }
   const cls = colorMap[color] || colorMap.blue
   const Inner = (
-    <div className="stat-card hover:border-white/10 transition-all duration-200">
+    <div className="stat-card h-full hover:border-white/10 transition-all duration-200">
       <div className="flex items-start justify-between">
         <div>
           <div className="stat-label">{label}</div>
@@ -41,7 +41,7 @@ function StatCard({ label, value, icon: Icon, color = 'blue', sublabel, to }) {
       </div>
     </div>
   )
-  return to ? <Link to={to}>{Inner}</Link> : Inner
+  return to ? <Link to={to} className="block h-full">{Inner}</Link> : Inner
 }
 
 const CustomTooltip = ({ active, payload }) => {
